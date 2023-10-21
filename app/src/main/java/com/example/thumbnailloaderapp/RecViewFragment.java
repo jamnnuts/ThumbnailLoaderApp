@@ -82,7 +82,7 @@ public class RecViewFragment extends Fragment {
             rv.setLayoutManager(gridLayoutManager);
         }
 
-        adapter = new RecyclerViewAdapter(fragmentViewModel.getImageArray());
+        adapter = new RecyclerViewAdapter(fragmentViewModel.getImageArray(), getContext());
         rv.setAdapter(adapter);
 
         returnButton.setOnClickListener(new View.OnClickListener() {

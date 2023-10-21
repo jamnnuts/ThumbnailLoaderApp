@@ -128,7 +128,7 @@ public class SearchImageFragment extends Fragment {
             @Override
             public void onChanged(String s) {
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(getActivity(), "Search Complete", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Search Complete, Now Retrieving Image...", Toast.LENGTH_LONG).show();
                 ImageRetrievalThread imageRetrievalThread = new ImageRetrievalThread(getActivity(), sViewModel, imageViewModel, errorViewModel,fragmentViewModel);
                 progressBar.setVisibility(View.VISIBLE);
                 imageRetrievalThread.start();
@@ -138,13 +138,16 @@ public class SearchImageFragment extends Fragment {
         imageViewModel.image.observe(getActivity(), new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
-                progressBar.setVisibility(View.INVISIBLE);
-                picture.setVisibility(View.VISIBLE);
-                picture.setImageBitmap(imageViewModel.getImage());
+                if (imageViewModel.finishSearch) {
+                    Toast.makeText(getActivity(), "Retrieving Image Complete", Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    picture.setVisibility(View.VISIBLE);
+                    picture.setImageBitmap(imageViewModel.getImage());
+                }
 
                 if (!hasBitmap(imageViewModel.getImage())) {
                     fragmentViewModel.addToArray(imageViewModel.getImage());
-                    Log.d("ArrayList","Item added to array");
+                    Log.d("ArrayList","Item added to array" + imageViewModel.getImage().toString());
 
                 }
             }

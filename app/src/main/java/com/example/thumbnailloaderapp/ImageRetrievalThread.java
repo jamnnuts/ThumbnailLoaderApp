@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ImageRetrievalThread extends Thread {
 
@@ -34,7 +36,7 @@ public class ImageRetrievalThread extends Thread {
         this.uiActivity=uiActivity;
     }
     public void run(){
-        String endpoint = getEndpoint(sViewModel.getResponse());
+        ArrayList<String> endpoint = getEndpoint(sViewModel.getResponse());
         if(endpoint==null){
             uiActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -45,24 +47,39 @@ public class ImageRetrievalThread extends Thread {
             });
         }
         else {
-            Bitmap image = getImageFromUrl(endpoint);
+            for (int i = 0; i < endpoint.size(); i++) {
+                Bitmap image = getImageFromUrl(endpoint.get(i));
 
-            try {
-                Thread.sleep(3000);
-            } catch (Exception e) {
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                }
+
+                imageViewModel.setImage(image);
+                if (i == endpoint.size() - 1) {
+                    imageViewModel.setFinishSearch();
+                }
             }
-            imageViewModel.setImage(image);
         }
     }
 
-    private String getEndpoint(String data){
-        String imageUrl = null;
+    private ArrayList<String> getEndpoint(String data){
+        ArrayList<String> imageUrl = new ArrayList<>();
         try {
             JSONObject jBase = new JSONObject(data);
             JSONArray jHits = jBase.getJSONArray("hits");
-            if(jHits.length()>0){
-                JSONObject jHitsItem = jHits.getJSONObject(0);
-                imageUrl = jHitsItem.getString("largeImageURL");
+
+            if(jHits.length()>0 && jHits.length() > 5){
+                for (int i = 0; i < 5; i++) {
+                    JSONObject jHitsItem = jHits.getJSONObject(i);
+                    imageUrl.add(jHitsItem.getString("largeImageURL"));
+                }
+            }
+            else if (jHits.length() > 0 && jHits.length() <= 5) {
+                for (int i = 0; i < jHits.length(); i++) {
+                    JSONObject jHitsItem = jHits.getJSONObject(i);
+                    imageUrl.add(jHitsItem.getString("largeImageURL"));
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

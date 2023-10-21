@@ -9,7 +9,11 @@ import java.util.ArrayList;
 
 public class ImageVM extends ViewModel{
     public MutableLiveData<Bitmap> image;
-    public ImageVM(){image = new MutableLiveData<Bitmap>();}
+    public boolean finishSearch;
+    public ImageVM(){
+        image = new MutableLiveData<Bitmap>();
+        finishSearch = false;
+    }
 
     public Bitmap getImage(){
         return image.getValue();
@@ -17,5 +21,6 @@ public class ImageVM extends ViewModel{
     public void setImage(Bitmap bitmap){
         image.postValue(bitmap);
     }
+    public void setFinishSearch(){ finishSearch = true;}
 }
 
