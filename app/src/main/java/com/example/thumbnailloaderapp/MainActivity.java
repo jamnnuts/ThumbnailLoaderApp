@@ -11,6 +11,7 @@ import android.os.Bundle;
 public class MainActivity extends AppCompatActivity {
 
     SearchImageFragment searchImageFragment = new SearchImageFragment();
+    RecViewFragment recViewFragment = new RecViewFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
                 if (fragmentViewmodel.getClickedFragment() == 1) {
                     loadSearchImage();
             }
+                else if (fragmentViewmodel.getClickedFragment() == 2) {
+                    loadRV();
+                }
         }
     });
 }
@@ -41,5 +45,17 @@ public class MainActivity extends AppCompatActivity {
             fm.beginTransaction().replace(R.id.fragmentContainerMain, searchImageFragment).commit();
         }
 
+    }
+
+    public void loadRV() {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment frag = fm.findFragmentById(R.id.fragmentContainerMain);
+
+        if (frag == null) {
+            fm.beginTransaction().add(R.id.fragmentContainerMain, recViewFragment).commit();
+        }
+        else {
+            fm.beginTransaction().replace(R.id.fragmentContainerMain, recViewFragment).commit();
+        }
     }
 }

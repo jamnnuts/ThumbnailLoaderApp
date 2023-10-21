@@ -5,11 +5,11 @@ import android.graphics.Bitmap;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+
 public class ImageVM extends ViewModel{
     public MutableLiveData<Bitmap> image;
-    public ImageVM(){
-        image = new MutableLiveData<Bitmap>();
-    }
+    public ImageVM(){image = new MutableLiveData<Bitmap>();}
 
     public Bitmap getImage(){
         return image.getValue();

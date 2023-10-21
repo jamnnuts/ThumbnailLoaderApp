@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 public class ImageRetrievalThread extends Thread {
 
@@ -21,13 +22,15 @@ public class ImageRetrievalThread extends Thread {
     private SearchResponseVM sViewModel;
     private ImageVM imageViewModel;
     private ErrorVM errorViewModel;
+    private FragmentViewModel fragmentViewModel;
     private Activity uiActivity;
 
-    public ImageRetrievalThread(Activity uiActivity, SearchResponseVM viewModel, ImageVM imageViewModel, ErrorVM errorViewModel) {
+    public ImageRetrievalThread(Activity uiActivity, SearchResponseVM viewModel, ImageVM imageViewModel, ErrorVM errorViewModel, FragmentViewModel fragmentViewModel) {
         remoteUtilities = RemoteUtilities.getInstance(uiActivity);
         this.sViewModel = viewModel;
         this.imageViewModel = imageViewModel;
         this.errorViewModel = errorViewModel;
+        this.fragmentViewModel = fragmentViewModel;
         this.uiActivity=uiActivity;
     }
     public void run(){
