@@ -5,10 +5,9 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,9 +49,12 @@ public class SearchImageFragment extends Fragment {
     ErrorVM errorViewModel;
     FragmentViewModel fragmentViewModel;
     Button loadImage;
+    Button rv1View;
+    Button rv2View;
     ImageView picture;
     ProgressBar progressBar;
     EditText searchKey;
+    ArrayList<Bitmap> imageList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,44 +77,79 @@ public class SearchImageFragment extends Fragment {
         errorViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.NewInstanceFactory()).get(ErrorVM.class);
 
         loadImage = rootView.findViewById(R.id.loadImage);
-        picture = rootView.findViewById(R.id.picureId);
+        picture = rootView.findViewById(R.id.pictureId);
         progressBar = rootView.findViewById(R.id.progressBarId);
         searchKey = rootView.findViewById(R.id.inputSearch);
+        rv1View = rootView.findViewById(R.id.gotoRV1);
+        rv2View = rootView.findViewById(R.id.gotoRV2);
 
         picture.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
 
         loadImage.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                picture.setVisibility(View.INVISIBLE);
-                String searchValues = searchKey.getText().toString();
-                APISearchThread searchThread = new APISearchThread(searchValues, getActivity(), sViewModel);
-                progressBar.setVisibility(View.VISIBLE);
-                searchThread.start();
+                searchImage();
+
+                Log.d("ArrayList","Number of elements in the arraylist: " + fragmentViewModel.imageArray.size());
             }
         });
+
+        rv1View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentViewModel.setClickedLayout(1);
+                fragmentViewModel.setClickedFragment(2);
+            }
+        });
+
+        rv2View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentViewModel.setClickedLayout(2);
+                fragmentViewModel.setClickedFragment(2);
+            }
+        });
+
+        return rootView;
+    }
+
+
+
+    public void searchImage() {
+        picture.setVisibility(View.INVISIBLE);
+        String searchValues = searchKey.getText().toString();
+        APISearchThread searchThread = new APISearchThread(searchValues, getActivity(), sViewModel);
+        progressBar.setVisibility(View.VISIBLE);
+        searchThread.start();
 
         sViewModel.response.observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 progressBar.setVisibility(View.INVISIBLE);
                 Toast.makeText(getActivity(), "Search Complete", Toast.LENGTH_LONG).show();
-                ImageRetrievalThread imageRetrievalThread = new ImageRetrievalThread(getActivity(), sViewModel, imageViewModel, errorViewModel);
+                ImageRetrievalThread imageRetrievalThread = new ImageRetrievalThread(getActivity(), sViewModel, imageViewModel, errorViewModel,fragmentViewModel);
                 progressBar.setVisibility(View.VISIBLE);
                 imageRetrievalThread.start();
 
             }
         });
-
         imageViewModel.image.observe(getActivity(), new Observer<Bitmap>() {
             @Override
             public void onChanged(Bitmap bitmap) {
                 progressBar.setVisibility(View.INVISIBLE);
                 picture.setVisibility(View.VISIBLE);
                 picture.setImageBitmap(imageViewModel.getImage());
+
+                if (!hasBitmap(imageViewModel.getImage())) {
+                    fragmentViewModel.addToArray(imageViewModel.getImage());
+                    Log.d("ArrayList","Item added to array");
+
+                }
             }
         });
+
         errorViewModel.errorCode.observe(getActivity(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -118,6 +157,14 @@ public class SearchImageFragment extends Fragment {
             }
         });
 
-        return rootView;
+    }
+
+    public boolean hasBitmap(Bitmap inBitmap) {
+        for(int i = 0;i < fragmentViewModel.getImageArray().size();i++) {
+            if (inBitmap == fragmentViewModel.getImageArray().get(i)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
