@@ -68,17 +68,18 @@ public class ImageRetrievalThread extends Thread {
         try {
             JSONObject jBase = new JSONObject(data);
             JSONArray jHits = jBase.getJSONArray("hits");
+            Log.d("json hit", jHits.getString(0));
 
-            if(jHits.length()>0 && jHits.length() > 5){
-                for (int i = 0; i < 5; i++) {
+            if(jHits.length()>0 && jHits.length() > 15){
+                for (int i = 0; i < 15; i++) {
                     JSONObject jHitsItem = jHits.getJSONObject(i);
-                    imageUrl.add(jHitsItem.getString("largeImageURL"));
+                    imageUrl.add(jHitsItem.getString("webformatURL"));
                 }
             }
-            else if (jHits.length() > 0 && jHits.length() <= 5) {
+            else if (jHits.length() > 0 && jHits.length() <= 15) {
                 for (int i = 0; i < jHits.length(); i++) {
                     JSONObject jHitsItem = jHits.getJSONObject(i);
-                    imageUrl.add(jHitsItem.getString("largeImageURL"));
+                    imageUrl.add(jHitsItem.getString("webformatURL"));
                 }
             }
         } catch (JSONException e) {

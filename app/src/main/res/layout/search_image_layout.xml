@@ -11,16 +11,15 @@
     <ImageView
         android:id="@+id/searchImage"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:padding="8dp"
-        android:layout_weight="7"
+        android:scaleType="fitXY"
         android:layout_gravity="center_vertical"
         tools:srcCompat="@tools:sample/avatars"/>
     <Button
         android:id="@+id/uploadImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="Upload"
         android:layout_gravity="center"
         />
